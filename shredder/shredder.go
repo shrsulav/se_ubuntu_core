@@ -51,13 +51,21 @@ func shred(fileName string) int {
 		writeError := os.WriteFile(fileName, randomData, 666)
 
 		if writeError != nil {
-			fmt.Printf("Error shredding the file \"%v\"", fileName)
+			fmt.Printf("Shredder Pass %d : %v\n", 4 - shredCount, writeError)
 			shredErrCount += 1
+		} else {
+			fmt.Printf("Shredding successful.\n")
 		}
 
-		fmt.Printf("Shredding successful.\n")
-
 		shredCount -= 1
+	}
+
+	// delete the file
+	delErr := os.Remove(fileName)
+    if delErr != nil {
+        fmt.Printf("%v\n", delErr)
+    } else {
+		fmt.Printf("Deleted the file \"%v\"\n", fileName)
 	}
 
 	return shredErrCount
