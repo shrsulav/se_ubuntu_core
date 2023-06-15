@@ -1,4 +1,4 @@
-package main
+package shredder
 
 import "fmt"
 import "os"
