@@ -5,7 +5,7 @@ import "os"
 
 // test for shredding a file which does not exist
 func Test_1(t *testing.T) {
-	createErr := os.Mkdir("testDir", 0777)
+	createErr := os.MkdirAll("testDir", 0777)
 
 	if createErr != nil {
 		t.Errorf("Error creating test directory.")
@@ -30,7 +30,7 @@ func Test_1(t *testing.T) {
 
 // test for shredding a file which exists and has rw file permissions
 func Test_2(t *testing.T) {
-	createErr := os.Mkdir("testDir", 0777)
+	createErr := os.MkdirAll("testDir", 0777)
 
 	if createErr != nil {
 		t.Errorf("Error creating test directory.")
@@ -70,7 +70,7 @@ func Test_2(t *testing.T) {
 
 // test for shredding a file which does not have a write permission
 func Test_3(t *testing.T) {
-	createErr := os.Mkdir("testDir", 0777)
+	createErr := os.MkdirAll("testDir", 0777)
 
 	if createErr != nil {
 		t.Errorf("Error creating test directory.")
@@ -124,7 +124,7 @@ func Test_3(t *testing.T) {
 // test for shredding a file owned by the root
 func Test_4(t *testing.T) {
 
-	createErr := os.Mkdir("testDir", 0777)
+	createErr := os.MkdirAll("testDir", 0777)
 
 	if createErr != nil {
 		t.Errorf("Error creating test directory.")
@@ -179,7 +179,7 @@ func Test_4(t *testing.T) {
 // test for shredding a file in a directory which does not have executable permission
 func Test_5(t *testing.T) {
 
-	createErr := os.Mkdir("testDir", 0777)
+	createErr := os.MkdirAll("testDir", 0777)
 
 	if createErr != nil {
 		t.Errorf("Error creating test directory.")
