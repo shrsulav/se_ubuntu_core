@@ -9,7 +9,7 @@ func shred(fileName string) int {
 
 	// check if the file exists
 
-	fileInfo, fileError := os.Stat(fileName)
+	_, fileError := os.Stat(fileName)
 
 	if os.IsNotExist(fileError) {
 		log.Printf("\"%v\" file does not exist.\n", fileName)
@@ -18,18 +18,18 @@ func shred(fileName string) int {
 		log.Printf("\"%v\" file exists.\n", fileName)
 	}
 
-	log.Printf("The file \"%v\" is %d bytes long.\n", fileName, fileInfo.Size())
+	// log.Printf("The file \"%v\" is %d bytes long.\n", fileName, fileInfo.Size())
 
-	var randomDataSize uint64
+	// var randomDataSize uint64
 
-	if(fileInfo.Size() <= 0) {
-		log.Println("Error: file size is zero or negative.")
-		randomDataSize = rand.Uint64()
-	} else {
-		randomDataSize = uint64(fileInfo.Size())
-	}
+	// if(fileInfo.Size() <= 0) {
+	// 	log.Println("Error: file size is zero or negative.")
+	// 	randomDataSize = rand.Uint64()
+	// } else {
+	// 	randomDataSize = uint64(fileInfo.Size())
+	// }
 
-	log.Printf("Random data size is %d\n", randomDataSize)
+	// log.Printf("Random data size is %d\n", randomDataSize)
 
 	randomData := make([]byte, 1000)
 
