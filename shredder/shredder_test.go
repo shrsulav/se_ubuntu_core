@@ -36,3 +36,27 @@ func Test_3(t *testing.T) {
 		t.Errorf("got %q, expected %q", result, expected)
 	}
 }
+
+// test for shredding a file owned by the root
+func Test_4(t *testing.T) {
+	fileName := "../test_files/test_file_3.pdf"
+
+	result := shred(fileName)
+	expected := 3
+
+	if result != expected {
+		t.Errorf("got %q, expected %q", result, expected)
+	}
+}
+
+// test for shredding a file owned by the root
+func Test_5(t *testing.T) {
+	fileName := "../test_files/test_file_4.pdf"
+
+	result := shred(fileName)
+	expected := 0
+
+	if result != expected {
+		t.Errorf("got %q, expected %q", result, expected)
+	}
+}
