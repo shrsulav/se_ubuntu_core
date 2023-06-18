@@ -2,6 +2,7 @@ package shredder
 
 import "testing"
 import "os"
+import "log"
 
 // test for shredding a file which does not exist
 func Test_1(t *testing.T) {
@@ -25,6 +26,8 @@ func Test_1(t *testing.T) {
 
 	if removeErr != nil {
 		t.Errorf("Error deleting the test directory")
+	} else {
+		log.Printf("Successfully deleted test directory.")
 	}
 }
 
@@ -50,6 +53,8 @@ func Test_2(t *testing.T) {
 
 		if removeErr != nil {
 			t.Errorf("Error deleting the test directory")
+		} else {
+			log.Printf("Successfully deleted test directory.")
 		}
 
 		return
@@ -65,6 +70,8 @@ func Test_2(t *testing.T) {
 
 	if removeErr != nil {
 		t.Errorf("Error deleting the test directory")
+	} else {
+		log.Printf("Successfully deleted test directory.")
 	}
 }
 
@@ -89,6 +96,8 @@ func Test_3(t *testing.T) {
 
 		if removeErr != nil {
 			t.Errorf("Error deleting the test directory")
+		} else {
+			log.Printf("Successfully deleted test directory.")
 		}
 
 		return
@@ -102,6 +111,8 @@ func Test_3(t *testing.T) {
 
 		if removeErr != nil {
 			t.Errorf("Error deleting the test directory")
+		} else {
+			log.Printf("Successfully deleted test directory.")
 		}
 
       	return
@@ -118,6 +129,8 @@ func Test_3(t *testing.T) {
 
 	if removeErr != nil {
 		t.Errorf("Error deleting the test directory")
+	} else {
+		log.Printf("Successfully deleted test directory.")
 	}
 }
 
@@ -143,6 +156,8 @@ func Test_4(t *testing.T) {
 
 		if removeErr != nil {
 			t.Errorf("Error deleting the test directory")
+		} else {
+			log.Printf("Successfully deleted test directory.")
 		}
 
 		return
@@ -157,6 +172,8 @@ func Test_4(t *testing.T) {
 
 		if removeErr != nil {
 			t.Errorf("Error deleting the test directory")
+		} else {
+			log.Printf("Successfully deleted test directory.")
 		}
 
 		return
@@ -173,6 +190,8 @@ func Test_4(t *testing.T) {
 
 	if removeErr != nil {
 		t.Errorf("Error deleting the test directory")
+	} else {
+		log.Printf("Successfully deleted test directory.")
 	}
 }
 
@@ -217,7 +236,7 @@ func Test_5(t *testing.T) {
 		return
 	}
 	result := shred(fileName)
-	expected := 3
+	expected := -1
 
 	if result != expected {
 		t.Errorf("got %q, expected %q", result, expected)
@@ -226,7 +245,36 @@ func Test_5(t *testing.T) {
 	remodError := os.Chmod("testDir", 0777)
 
 	if remodError != nil {
-		t.Errorf("Error removing executable permissions from the test directory.")
+		t.Errorf("Error readding executable permissions from the test directory.")
+		log.Printf("%v\n", remodError)
+	}
+
+	removeErr := os.RemoveAll("testDir")
+
+	if removeErr != nil {
+		t.Errorf("Error deleting the test directory")
+	} else {
+		log.Printf("Successfully deleted test directory.")
+	}
+}
+
+// test for shredding a file in a directory which does not have executable permission
+func Test_6(t *testing.T) {
+
+	createErr := os.MkdirAll("testDir/testSubDir", 0777)
+
+	if createErr != nil {
+		t.Errorf("Error creating test directory.")
+	}
+
+	fileName := "testDir/testSubDir/test_file_4.txt"
+
+	randomData := make([]byte, 1000)
+
+	writeError := os.WriteFile(fileName, randomData, 0666)
+
+	if writeError != nil {
+		t.Errorf("Error creating test file.")
 
 		removeErr := os.RemoveAll("testDir")
 
@@ -237,9 +285,18 @@ func Test_5(t *testing.T) {
 		return
 	}
 
+	result := shred("testDir/testSubDir")
+	expected := -1
+
+	if result != expected {
+		t.Errorf("got %q, expected %q", result, expected)
+	}
+
 	removeErr := os.RemoveAll("testDir")
 
 	if removeErr != nil {
-		t.Errorf("Error deleting the test directory")
+		t.Errorf("Error deleting the test directory.")
+	} else {
+		log.Printf("Successfully deleted test directory.")
 	}
 }

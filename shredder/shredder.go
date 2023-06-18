@@ -3,13 +3,14 @@ package shredder
 import "os"
 import "math/rand"
 import "log"
+import "path/filepath"
 
 func shred(fileName string) int {
 	log.Printf("Shredding file: %v\n", fileName)
 
 	// check if the file exists
 
-	_, fileError := os.Stat(fileName)
+	fileInfo, fileError := os.Stat(fileName)
 
 	if os.IsNotExist(fileError) {
 		log.Printf("\"%v\" file does not exist.\n", fileName)
@@ -18,7 +19,22 @@ func shred(fileName string) int {
 		log.Printf("\"%v\" file exists.\n", fileName)
 	}
 
-	// log.Printf("The file \"%v\" is %d bytes long.\n", fileName, fileInfo.Size())
+	dir, _ := filepath.Split(fileName)
+	log.Println("Directory name is :", dir)
+
+	dirError := os.Chdir(dir)
+	if dirError != nil {
+		log.Printf("%v\n", dirError)
+		return -1
+	}
+	_ = os.Chdir("..")
+
+	if !fileInfo.Mode().IsRegular() {
+        log.Println(fileName, "is not a regular file!")
+		return -1
+    }
+
+	log.Printf("The file \"%v\" is %d bytes long.\n", fileName, fileInfo.Size())
 
 	// var randomDataSize uint64
 
