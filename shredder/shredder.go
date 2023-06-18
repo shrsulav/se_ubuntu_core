@@ -7,17 +7,6 @@ import (
 	"path/filepath"
 )
 
-// return info
-// code : message
-//	0		: shredding successful
-//	-4		: file does not exist
-//	-3		: no execute permission in parent directory
-//	-2		: is not a file, but a directory
-//	-1		: file open error
-//	1		: file write/shred error
-//	2		: file delete error
-
-
 func Shred(fileName string) *ShredderError {
 	log.Printf("Shredding file: %v\n", fileName)
 

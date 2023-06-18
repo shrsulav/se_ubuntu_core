@@ -1,9 +1,11 @@
 package shredder
 
-import "testing"
-import "os"
-import "log"
-import "math/rand"
+import (
+	"testing"
+	"os"
+	"log"
+	"math/rand"
+)
 
 // test for shredding a file which does not exist
 func Test_1(t *testing.T) {
