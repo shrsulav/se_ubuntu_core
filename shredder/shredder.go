@@ -5,7 +5,7 @@ import "math/rand"
 import "log"
 import "path/filepath"
 
-func shred(fileName string) int {
+func Shred(fileName string) int {
 	log.Printf("Shredding file: %v\n", fileName)
 
 	// check if the file exists

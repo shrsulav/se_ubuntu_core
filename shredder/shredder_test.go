@@ -15,7 +15,7 @@ func Test_1(t *testing.T) {
 
 	fileName := "testDir/nonexistentfile.txt"
 
-	result := shred(fileName)
+	result := Shred(fileName)
 	expected := -1
 
 	if result != expected {
@@ -59,7 +59,7 @@ func Test_2(t *testing.T) {
 
 		return
 	}
-	result := shred(fileName)
+	result := Shred(fileName)
 	expected := 0
 
 	if result != expected {
@@ -118,7 +118,7 @@ func Test_3(t *testing.T) {
       	return
    	}
 
-	result := shred(fileName)
+	result := Shred(fileName)
 	expected := 3
 
 	if result != expected {
@@ -179,7 +179,7 @@ func Test_4(t *testing.T) {
 		return
 	}
 
-	result := shred(fileName)
+	result := Shred(fileName)
 	expected := 0
 
 	if result != expected {
@@ -235,7 +235,7 @@ func Test_5(t *testing.T) {
 
 		return
 	}
-	result := shred(fileName)
+	result := Shred(fileName)
 	expected := -1
 
 	if result != expected {
@@ -285,7 +285,7 @@ func Test_6(t *testing.T) {
 		return
 	}
 
-	result := shred("testDir/testSubDir")
+	result := Shred("testDir/testSubDir")
 	expected := -1
 
 	if result != expected {
