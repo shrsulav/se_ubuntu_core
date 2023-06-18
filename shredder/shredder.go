@@ -15,19 +15,51 @@ import (
 //	-3		: no execute permission in parent directory
 //	-2		: is not a file, but a directory
 //	-1		: file open error
-//	1, 2, 3	: file write/shred error
-//	4		: file delete error
+//	1		: file write/shred error
+//	2		: file delete error
+
+type ShredErrCode int
+
+const (
+	FileNotExistError 	ShredErrCode = -4
+	NoExecutePermError 	ShredErrCode = -3
+	NotAFileError 		ShredErrCode = -2
+	OpenError 			ShredErrCode = -1
+	Success 			ShredErrCode = 0
+	WriteError 			ShredErrCode = 1
+	DeleteError 		ShredErrCode = 2
+)
+
+func (errCode ShredErrCode) ShredErrString() string {
+	switch errCode {
+	case FileNotExistError:
+		return "file does not exist"
+	case NoExecutePermError:
+		return "no execute permission in parent directory"
+	case NotAFileError:
+		return "given path is not a file, but a directory"
+	case OpenError:
+		return "file open error"
+	case Success:
+		return "shredding successful"
+	case WriteError:
+		return "error while writing to file"
+	case DeleteError:
+		return "error while deleting the file"
+	}
+	return "Unknown ShredErrorCode"
+}
 
 type ShredderError struct {
-	ErrMessage string
-	ErrCode  int
+	ErrMessage 	string
+	ErrCode  	ShredErrCode
 }
 
 func (w *ShredderError) Error() string {
 	return fmt.Sprintf("%s: %v", w.ErrMessage, w.ErrCode)
 }
 
-func ReturnInfo(code int, msg string) *ShredderError {
+func ReturnInfo(code ShredErrCode, msg string) *ShredderError {
 	return &ShredderError{
 		ErrMessage: msg,
 		ErrCode:    code,
@@ -43,7 +75,7 @@ func Shred(fileName string) *ShredderError {
 
 	if os.IsNotExist(fileError) {
 		log.Printf("\"%v\" file does not exist.\n", fileName)
-		err := ReturnInfo(-4, "file does not exist")
+		err := ReturnInfo(FileNotExistError, FileNotExistError.ShredErrString())
 		return err
 	} else {
 		log.Printf("\"%v\" file exists.\n", fileName)
@@ -136,7 +168,7 @@ func Shred(fileName string) *ShredderError {
 
 	if shredErrCount != 0 {
 		log.Printf("Error shredding!\n")
-		err := ReturnInfo(shredErrCount, "no executable permission in parent directory")
+		err := ReturnInfo(WriteError, WriteError.ShredErrString())
 		return err
 	}
 
