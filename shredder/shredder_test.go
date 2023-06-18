@@ -3,6 +3,7 @@ package shredder
 import "testing"
 import "os"
 import "log"
+import "math/rand"
 
 // test for shredding a file which does not exist
 func Test_1(t *testing.T) {
@@ -42,9 +43,14 @@ func Test_2(t *testing.T) {
 
 	fileName := "testDir/test_file_1.txt"
 
-	randomData := make([]byte, 1000)
+	randomData := make([]byte, 100)
 
-	writeError := os.WriteFile(fileName, randomData, 666)
+	_, randError := rand.Read(randomData)
+	if randError != nil {
+		log.Printf("Error while generating random string: %s", randError)
+	}
+
+	writeError := os.WriteFile(fileName, randomData, 0666)
 
 	if writeError != nil {
 		t.Errorf("Error creating test file.")
@@ -85,7 +91,12 @@ func Test_3(t *testing.T) {
 
 	fileName := "testDir/test_file_2.txt"
 
-	randomData := make([]byte, 1000)
+	randomData := make([]byte, 100)
+
+	_, randError := rand.Read(randomData)
+	if randError != nil {
+		log.Printf("Error while generating random string: %s", randError)
+	}
 
 	writeError := os.WriteFile(fileName, randomData, 0666)
 
@@ -119,7 +130,7 @@ func Test_3(t *testing.T) {
    	}
 
 	result := Shred(fileName)
-	expected := 3
+	expected := -1
 
 	if result != expected {
 		t.Errorf("got %q, expected %q", result, expected)
@@ -145,7 +156,12 @@ func Test_4(t *testing.T) {
 
 	fileName := "testDir/test_file_3.txt"
 
-	randomData := make([]byte, 1000)
+	randomData := make([]byte, 100)
+
+	_, randError := rand.Read(randomData)
+	if randError != nil {
+		log.Printf("Error while generating random string: %s", randError)
+	}
 
 	writeError := os.WriteFile(fileName, randomData, 0666)
 
@@ -206,7 +222,12 @@ func Test_5(t *testing.T) {
 
 	fileName := "testDir/test_file_4.txt"
 
-	randomData := make([]byte, 1000)
+	randomData := make([]byte, 100)
+
+	_, randError := rand.Read(randomData)
+	if randError != nil {
+		log.Printf("Error while generating random string: %s", randError)
+	}
 
 	writeError := os.WriteFile(fileName, randomData, 0666)
 
@@ -269,9 +290,14 @@ func Test_6(t *testing.T) {
 
 	fileName := "testDir/testSubDir/test_file_4.txt"
 
-	randomData := make([]byte, 1000)
+	randomData := make([]byte, 100)
 
 	writeError := os.WriteFile(fileName, randomData, 0666)
+
+	_, randError := rand.Read(randomData)
+	if randError != nil {
+		log.Printf("Error while generating random string: %s", randError)
+	}
 
 	if writeError != nil {
 		t.Errorf("Error creating test file.")

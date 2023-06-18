@@ -1,9 +1,11 @@
 package shredder
 
-import "os"
-import "math/rand"
-import "log"
-import "path/filepath"
+import (
+	"os"
+	"math/rand"
+	"log"
+	"path/filepath"
+)
 
 func Shred(fileName string) int {
 	log.Printf("Shredding file: %v\n", fileName)
@@ -36,41 +38,67 @@ func Shred(fileName string) int {
 
 	log.Printf("The file \"%v\" is %d bytes long.\n", fileName, fileInfo.Size())
 
-	// var randomDataSize uint64
+	var randomDataSize int
 
-	// if(fileInfo.Size() <= 0) {
-	// 	log.Println("Error: file size is zero or negative.")
-	// 	randomDataSize = rand.Uint64()
-	// } else {
-	// 	randomDataSize = uint64(fileInfo.Size())
-	// }
+	if(fileInfo.Size() <= 0) {
+		log.Println("Error: file size is zero or negative.")
+		randomDataSize = rand.Int()
+	} else {
+		randomDataSize = int(fileInfo.Size())
+	}
 
-	// log.Printf("Random data size is %d\n", randomDataSize)
+	log.Printf("Random data size is %d\n", randomDataSize)
 
 	randomData := make([]byte, 1000)
 
 	shredCount := 3
 	shredErrCount := 0
 
+	fileHandle, openError := os.OpenFile(fileName, os.O_RDWR, 0666)
+
+	if openError != nil {
+		log.Printf("%v\n", openError)
+		return -1
+	}
+
+	defer fileHandle.Close()
+
+	var readBuffer []byte
+	_, readError := fileHandle.Read(readBuffer)
+
+	if readError != nil {
+		log.Printf("%v\n", readError)
+		return -1
+	}
+
+	readStringBuffer := string(readBuffer)
+	log.Println(readStringBuffer)
+
 	for shredCount > 0 {
 
-		// generate random data
+		var shreddedBytes int = 0
 
-		_, err := rand.Read(randomData)
+		for shreddedBytes < randomDataSize {
 
-		if err != nil {
-			log.Printf("Error generating random data.\n");
-		}
+			// generate random data
+			_, randErr := rand.Read(randomData)
 
-		// write to file
+			if randErr != nil {
+				log.Printf("Error generating random data.\n");
+			}
 
-		writeError := os.WriteFile(fileName, randomData, 666)
+			// write to file
+			numBytes, writeError := fileHandle.WriteAt(randomData, int64(shreddedBytes))
 
-		if writeError != nil {
-			log.Printf("Shredder Pass %d : %v\n", 4 - shredCount, writeError)
-			shredErrCount += 1
-		} else {
-			log.Printf("Shredding successful.\n")
+			if writeError != nil {
+				log.Printf("Shredder Pass %d : %v\n", 4 - shredCount, writeError)
+				shredErrCount += 1
+			} else {
+				log.Printf("Shredder Pass %d: Shredding successful.\n", 4 - shredCount)
+			}
+
+			shreddedBytes += numBytes
+
 		}
 
 		shredCount -= 1
