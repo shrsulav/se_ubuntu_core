@@ -21,6 +21,7 @@ import (
 type ShredErrCode int
 
 const (
+	ShredErrProcessing 		ShredErrCode = -5
 	ShredErrFileNotExist 	ShredErrCode = -4
 	ShredErrNoExecutePerm 	ShredErrCode = -3
 	ShredErrNotAFile 		ShredErrCode = -2
@@ -84,13 +85,21 @@ func Shred(fileName string) *ShredderError {
 	dir, _ := filepath.Split(fileName)
 	log.Println("Directory name is :", dir)
 
+	cwDir, wdErr := os.Getwd()
+	if wdErr != nil {
+		log.Println(wdErr)
+		err := ReturnInfo(ShredErrProcessing, ShredErrProcessing.ShredErrString())
+		return err
+	}
+	log.Println("Current Working Directory is ", cwDir)
+
 	dirError := os.Chdir(dir)
 	if dirError != nil {
 		log.Printf("%v\n", dirError)
 		err := ReturnInfo(ShredErrNoExecutePerm, ShredErrNoExecutePerm.ShredErrString())
 		return err
 	}
-	_ = os.Chdir("..")
+	_ = os.Chdir(cwDir)
 
 	if !fileInfo.Mode().IsRegular() {
         log.Println(fileName, "is not a regular file!")
