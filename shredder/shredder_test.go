@@ -17,10 +17,10 @@ func Test_1(t *testing.T) {
 	fileName := "testDir/nonexistentfile.txt"
 
 	result := Shred(fileName)
-	expected := -1
+	expected := -4
 
-	if result != expected {
-		t.Errorf("got %q, expected %q", result, expected)
+	if result.ErrCode != expected {
+		t.Errorf("got %q, expected %q", result.ErrCode, expected)
 	}
 
 	removeErr := os.Remove("testDir")
@@ -68,8 +68,8 @@ func Test_2(t *testing.T) {
 	result := Shred(fileName)
 	expected := 0
 
-	if result != expected {
-		t.Errorf("got %q, expected %q", result, expected)
+	if result.ErrCode != expected {
+		t.Errorf("got %q, expected %q", result.ErrCode, expected)
 	}
 
 	removeErr := os.RemoveAll("testDir")
@@ -132,8 +132,8 @@ func Test_3(t *testing.T) {
 	result := Shred(fileName)
 	expected := -1
 
-	if result != expected {
-		t.Errorf("got %q, expected %q", result, expected)
+	if result.ErrCode != expected {
+		t.Errorf("got %q, expected %q", result.ErrCode, expected)
 	}
 
 	removeErr := os.RemoveAll("testDir")
@@ -198,8 +198,8 @@ func Test_4(t *testing.T) {
 	result := Shred(fileName)
 	expected := 0
 
-	if result != expected {
-		t.Errorf("got %q, expected %q", result, expected)
+	if result.ErrCode != expected {
+		t.Errorf("got %q, expected %q", result.ErrCode, expected)
 	}
 
 	removeErr := os.RemoveAll("testDir")
@@ -257,10 +257,10 @@ func Test_5(t *testing.T) {
 		return
 	}
 	result := Shred(fileName)
-	expected := -1
+	expected := -3
 
-	if result != expected {
-		t.Errorf("got %q, expected %q", result, expected)
+	if result.ErrCode != expected {
+		t.Errorf("got %q, expected %q", result.ErrCode, expected)
 	}
 
 	remodError := os.Chmod("testDir", 0777)
@@ -312,10 +312,10 @@ func Test_6(t *testing.T) {
 	}
 
 	result := Shred("testDir/testSubDir")
-	expected := -1
+	expected := -2
 
-	if result != expected {
-		t.Errorf("got %q, expected %q", result, expected)
+	if result.ErrCode != expected {
+		t.Errorf("got %q, expected %q", result.ErrCode, expected)
 	}
 
 	removeErr := os.RemoveAll("testDir")

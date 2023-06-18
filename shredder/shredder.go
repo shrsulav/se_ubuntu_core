@@ -4,10 +4,37 @@ import (
 	"os"
 	"math/rand"
 	"log"
+	"fmt"
 	"path/filepath"
 )
 
-func Shred(fileName string) int {
+// return info
+// code : message
+//	0		: shredding successful
+//	-4		: file does not exist
+//	-3		: no execute permission in parent directory
+//	-2		: is not a file, but a directory
+//	-1		: file open error
+//	1, 2, 3	: file write/shred error
+//	4		: file delete error
+
+type ShredderError struct {
+	ErrMessage string
+	ErrCode  int
+}
+
+func (w *ShredderError) Error() string {
+	return fmt.Sprintf("%s: %v", w.ErrMessage, w.ErrCode)
+}
+
+func ReturnInfo(code int, msg string) *ShredderError {
+	return &ShredderError{
+		ErrMessage: msg,
+		ErrCode:    code,
+	}
+}
+
+func Shred(fileName string) *ShredderError {
 	log.Printf("Shredding file: %v\n", fileName)
 
 	// check if the file exists
@@ -16,7 +43,8 @@ func Shred(fileName string) int {
 
 	if os.IsNotExist(fileError) {
 		log.Printf("\"%v\" file does not exist.\n", fileName)
-		return -1
+		err := ReturnInfo(-4, "file does not exist")
+		return err
 	} else {
 		log.Printf("\"%v\" file exists.\n", fileName)
 	}
@@ -27,13 +55,15 @@ func Shred(fileName string) int {
 	dirError := os.Chdir(dir)
 	if dirError != nil {
 		log.Printf("%v\n", dirError)
-		return -1
+		err := ReturnInfo(-3, "no executable permission in parent directory")
+		return err
 	}
 	_ = os.Chdir("..")
 
 	if !fileInfo.Mode().IsRegular() {
         log.Println(fileName, "is not a regular file!")
-		return -1
+		err := ReturnInfo(-2, "the given file is not a file but a directory")
+		return err
     }
 
 	log.Printf("The file \"%v\" is %d bytes long.\n", fileName, fileInfo.Size())
@@ -58,7 +88,8 @@ func Shred(fileName string) int {
 
 	if openError != nil {
 		log.Printf("%v\n", openError)
-		return -1
+		err := ReturnInfo(-1, "error opening the file")
+		return err
 	}
 
 	defer fileHandle.Close()
@@ -68,7 +99,6 @@ func Shred(fileName string) int {
 
 	if readError != nil {
 		log.Printf("%v\n", readError)
-		return -1
 	}
 
 	readStringBuffer := string(readBuffer)
@@ -106,7 +136,8 @@ func Shred(fileName string) int {
 
 	if shredErrCount != 0 {
 		log.Printf("Error shredding!\n")
-		return shredErrCount
+		err := ReturnInfo(shredErrCount, "no executable permission in parent directory")
+		return err
 	}
 
 	// delete the file
@@ -114,12 +145,14 @@ func Shred(fileName string) int {
 	delErr := os.Remove(fileName)
     if delErr != nil {
         log.Printf("%v\n", delErr)
-		return 4
+		err := ReturnInfo(4, "no executable permission in parent directory")
+		return err
     } else {
 		log.Printf("Deleted the file \"%v\"\n", fileName)
 	}
 
-	return 0
+	err := ReturnInfo(0, "shredding successful")
+	return err
 }
 
 
