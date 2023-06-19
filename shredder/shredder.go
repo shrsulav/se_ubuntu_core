@@ -7,6 +7,9 @@ import (
 	"path/filepath"
 )
 
+const maxShredCount uint 	= 3
+const maxShredBytes int 	= 134_217_728	// 128MB
+
 // function to check if the parent directory for the given file has exec permissions
 func HasExecPerm(fileName string) *ShredderError {
 
@@ -62,18 +65,21 @@ func Shred(fileName string) *ShredderError {
 
 	var randomDataSize int
 
-	if(fileInfo.Size() <= 0) {
+	if fileInfo.Size() <= 0 {
 		log.Println("Error: file size is zero or negative.")
 		randomDataSize = rand.Int()
+	} else if fileInfo.Size() > int64(maxShredBytes) {
+		log.Println("File size is greater than maximum shred bytes (128MB).")
+		randomDataSize = maxShredBytes
 	} else {
 		randomDataSize = int(fileInfo.Size())
 	}
 
 	log.Printf("Random data size is %d\n", randomDataSize)
 
-	randomData := make([]byte, 1000)
+	randomData := make([]byte, randomDataSize)
 
-	shredCount := 3
+	shredCount := maxShredCount
 	shredErrCount := 0
 
 	fileHandle, openError := os.OpenFile(fileName, os.O_RDWR, 0666)
