@@ -7,23 +7,12 @@ import (
 	"path/filepath"
 )
 
-func Shred(fileName string) *ShredderError {
-	log.Printf("Shredding file: %v\n", fileName)
+func HasExecPerm(fileName string) *ShredderError {
 
-	// check if the file exists
-
-	fileInfo, fileError := os.Stat(fileName)
-
-	if os.IsNotExist(fileError) {
-		log.Printf("\"%v\" file does not exist.\n", fileName)
-		err := ReturnInfo(ShredErrFileNotExist, ShredErrFileNotExist.ShredErrString())
-		return err
-	} else {
-		log.Printf("\"%v\" file exists.\n", fileName)
-	}
+	// file exists
 
 	dir, _ := filepath.Split(fileName)
-	log.Println("Directory name is :", dir)
+	log.Println("Parent directory name is :", dir)
 
 	cwDir, wdErr := os.Getwd()
 	if wdErr != nil {
@@ -40,6 +29,29 @@ func Shred(fileName string) *ShredderError {
 		return err
 	}
 	_ = os.Chdir(cwDir)
+
+	return nil
+}
+
+func Shred(fileName string) *ShredderError {
+	log.Printf("Shredding file: %v\n", fileName)
+
+	// check if the file exists
+
+	fileInfo, fileError := os.Stat(fileName)
+
+	if os.IsNotExist(fileError) {
+		log.Printf("\"%v\" file does not exist.\n", fileName)
+		err := ReturnInfo(ShredErrFileNotExist, ShredErrFileNotExist.ShredErrString())
+		return err
+	} else {
+		log.Printf("\"%v\" file exists.\n", fileName)
+	}
+
+	permError := HasExecPerm(fileName)
+	if permError != nil	{
+		return permError
+	}
 
 	if !fileInfo.Mode().IsRegular() {
         log.Println(fileName, "is not a regular file!")
