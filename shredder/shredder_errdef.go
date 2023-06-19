@@ -5,18 +5,20 @@ import "fmt"
 type ShredErrCode int
 
 const (
-	ShredErrProcessing 		ShredErrCode = -5
-	ShredErrFileNotExist 	ShredErrCode = -4
-	ShredErrNoExecutePerm 	ShredErrCode = -3
-	ShredErrNotAFile 		ShredErrCode = -2
-	ShredErrFileOpen 		ShredErrCode = -1
+	ShredErrProcessing 		ShredErrCode = -7
+	ShredErrFileNotExist 	ShredErrCode = -6
+	ShredErrNoExecutePerm 	ShredErrCode = -5
+	ShredErrNotAFile 		ShredErrCode = -4
+	ShredErrFileOpen 		ShredErrCode = -3
+	ShredErrFileWrite		ShredErrCode = -2
+	ShredErrFileDelete 		ShredErrCode = -1
 	ShredErrSuccess 		ShredErrCode = 0
-	ShredErrFileWrite		ShredErrCode = 1
-	ShredErrFileDelete 		ShredErrCode = 2
 )
 
 func (errCode ShredErrCode) ShredErrString() string {
 	switch errCode {
+	case ShredErrProcessing:
+		return "error while processing the file"
 	case ShredErrFileNotExist:
 		return "file does not exist"
 	case ShredErrNoExecutePerm:

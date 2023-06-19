@@ -68,7 +68,7 @@ func Test_2(t *testing.T) {
 		return
 	}
 	result := Shred(fileName)
-	expected := ShredErrSuccess
+	expected := ShredErrCode(3)
 
 	if result.ErrCode != expected {
 		t.Errorf("got %+v, expected %+v", result.ErrCode, expected)
@@ -324,6 +324,55 @@ func Test_6(t *testing.T) {
 
 	if removeErr != nil {
 		t.Errorf("Error deleting the test directory.")
+	} else {
+		log.Printf("Successfully deleted test directory.")
+	}
+}
+
+// test for shredding a file which is larger than 128MB
+func Test_7(t *testing.T) {
+	createErr := os.MkdirAll("testDir", 0777)
+
+	if createErr != nil {
+		t.Errorf("Error creating test directory.")
+		return
+	}
+
+	fileName := "testDir/test_file_7.txt"
+
+	randomData := make([]byte, 314_572_800) // 300MB
+
+	_, randError := rand.Read(randomData)
+	if randError != nil {
+		log.Printf("Error while generating random string: %s", randError)
+	}
+
+	writeError := os.WriteFile(fileName, randomData, 0666)
+
+	if writeError != nil {
+		t.Errorf("Error creating test file.")
+
+		removeErr := os.RemoveAll("testDir")
+
+		if removeErr != nil {
+			t.Errorf("Error deleting the test directory")
+		} else {
+			log.Printf("Successfully deleted test directory.")
+		}
+
+		return
+	}
+	result := Shred(fileName)
+	expected := ShredErrCode(9)
+
+	if result.ErrCode != expected {
+		t.Errorf("got %+v, expected %+v", result.ErrCode, expected)
+	}
+
+	removeErr := os.RemoveAll("testDir")
+
+	if removeErr != nil {
+		t.Errorf("Error deleting the test directory")
 	} else {
 		log.Printf("Successfully deleted test directory.")
 	}
