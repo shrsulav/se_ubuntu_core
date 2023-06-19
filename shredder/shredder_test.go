@@ -182,7 +182,7 @@ func Test_3(t *testing.T) {
 // 	}
 
 // 	// change file ownership to root
-// 	ownErr := os.Chown(fileName, 1000, 1000 )
+// 	ownErr := os.Chown(fileName, root, root )
 // 	if ownErr != nil {
 // 		t.Errorf("Error changing file ownership")
 

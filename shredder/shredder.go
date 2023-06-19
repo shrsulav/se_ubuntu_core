@@ -61,18 +61,19 @@ func Shred(fileName string) *ShredderError {
 		return err
     }
 
-	log.Printf("The file \"%v\" is %d bytes long.\n", fileName, fileInfo.Size())
+	fileBytesNum := fileInfo.Size()
+	log.Printf("The file \"%v\" is %d bytes long.\n", fileName, fileBytesNum)
 
 	var randomDataSize int
 
-	if fileInfo.Size() <= 0 {
+	if fileBytesNum <= 0 {
 		log.Println("Error: file size is zero or negative.")
 		randomDataSize = rand.Int()
-	} else if fileInfo.Size() > int64(maxShredBytes) {
+	} else if fileBytesNum > int64(maxShredBytes) {
 		log.Println("File size is greater than maximum shred bytes (128MB).")
 		randomDataSize = maxShredBytes
 	} else {
-		randomDataSize = int(fileInfo.Size())
+		randomDataSize = int(fileBytesNum)
 	}
 
 	log.Printf("Random data size is %d\n", randomDataSize)
@@ -81,6 +82,7 @@ func Shred(fileName string) *ShredderError {
 
 	shredCount := maxShredCount
 	shredErrCount := 0
+	shredCycleCount := 0
 
 	fileHandle, openError := os.OpenFile(fileName, os.O_RDWR, 0666)
 
@@ -93,9 +95,9 @@ func Shred(fileName string) *ShredderError {
 	defer fileHandle.Close()
 
 	for shredCount > 0 {
-		var shreddedBytes int = 0
+		var shreddedBytes int64 = 0
 
-		for shreddedBytes < randomDataSize {
+		for shreddedBytes < fileBytesNum {
 			// generate random data
 			_, randErr := rand.Read(randomData)
 
@@ -111,9 +113,10 @@ func Shred(fileName string) *ShredderError {
 				shredErrCount += 1
 			} else {
 				log.Printf("Shredder Pass %d: Shredding successful.\n", 4 - shredCount)
+				shredCycleCount += 1
 			}
 
-			shreddedBytes += numBytes
+			shreddedBytes += int64(numBytes)
 		}
 		shredCount -= 1
 	}
@@ -123,6 +126,8 @@ func Shred(fileName string) *ShredderError {
 		err := ReturnInfo(ShredErrFileWrite, ShredErrFileWrite.ShredErrString())
 		return err
 	}
+
+	log.Printf("Shredder Cycle Count: %d.\n", shredCycleCount)
 
 	// delete the file
 	delErr := os.Remove(fileName)
@@ -134,7 +139,7 @@ func Shred(fileName string) *ShredderError {
 		log.Printf("Deleted the file \"%v\"\n", fileName)
 	}
 
-	err := ReturnInfo(ShredErrSuccess, ShredErrSuccess.ShredErrString())
+	err := ReturnInfo(ShredErrCode(shredCycleCount), ShredErrSuccess.ShredErrString())
 	return err
 }
 
