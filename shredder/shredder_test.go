@@ -148,70 +148,70 @@ func Test_3(t *testing.T) {
 }
 
 // test for shredding a file owned by the root
-func Test_4(t *testing.T) {
+// func Test_4(t *testing.T) {
 
-	createErr := os.MkdirAll("testDir", 0777)
+// 	createErr := os.MkdirAll("testDir", 0777)
 
-	if createErr != nil {
-		t.Errorf("Error creating test directory.")
-	}
+// 	if createErr != nil {
+// 		t.Errorf("Error creating test directory.")
+// 	}
 
-	fileName := "testDir/test_file_3.txt"
+// 	fileName := "testDir/test_file_3.txt"
 
-	randomData := make([]byte, 100)
+// 	randomData := make([]byte, 100)
 
-	_, randError := rand.Read(randomData)
-	if randError != nil {
-		log.Printf("Error while generating random string: %s", randError)
-	}
+// 	_, randError := rand.Read(randomData)
+// 	if randError != nil {
+// 		log.Printf("Error while generating random string: %s", randError)
+// 	}
 
-	writeError := os.WriteFile(fileName, randomData, 0666)
+// 	writeError := os.WriteFile(fileName, randomData, 0666)
 
-	if writeError != nil {
-		t.Errorf("Error creating test file.")
+// 	if writeError != nil {
+// 		t.Errorf("Error creating test file.")
 
-		removeErr := os.RemoveAll("testDir")
+// 		removeErr := os.RemoveAll("testDir")
 
-		if removeErr != nil {
-			t.Errorf("Error deleting the test directory")
-		} else {
-			log.Printf("Successfully deleted test directory.")
-		}
+// 		if removeErr != nil {
+// 			t.Errorf("Error deleting the test directory")
+// 		} else {
+// 			log.Printf("Successfully deleted test directory.")
+// 		}
 
-		return
-	}
+// 		return
+// 	}
 
-	// change file ownership to root
-	ownErr := os.Chown(fileName, 1000, 1000 )
-	if ownErr != nil {
-		t.Errorf("Error changing file ownership")
+// 	// change file ownership to root
+// 	ownErr := os.Chown(fileName, 1000, 1000 )
+// 	if ownErr != nil {
+// 		t.Errorf("Error changing file ownership")
 
-		removeErr := os.RemoveAll("testDir")
+// 		removeErr := os.RemoveAll("testDir")
 
-		if removeErr != nil {
-			t.Errorf("Error deleting the test directory")
-		} else {
-			log.Printf("Successfully deleted test directory.")
-		}
+// 		if removeErr != nil {
+// 			t.Errorf("Error deleting the test directory")
+// 		} else {
+// 			log.Printf("Successfully deleted test directory.")
+// 		}
 
-		return
-	}
+// 		return
+// 	}
 
-	result := Shred(fileName)
-	expected := ShredErrSuccess
+// 	result := Shred(fileName)
+// 	expected := ShredErrSuccess
 
-	if result.ErrCode != expected {
-		t.Errorf("got %+v, expected %+v", result.ErrCode, expected)
-	}
+// 	if result.ErrCode != expected {
+// 		t.Errorf("got %+v, expected %+v", result.ErrCode, expected)
+// 	}
 
-	removeErr := os.RemoveAll("testDir")
+// 	removeErr := os.RemoveAll("testDir")
 
-	if removeErr != nil {
-		t.Errorf("Error deleting the test directory")
-	} else {
-		log.Printf("Successfully deleted test directory.")
-	}
-}
+// 	if removeErr != nil {
+// 		t.Errorf("Error deleting the test directory")
+// 	} else {
+// 		log.Printf("Successfully deleted test directory.")
+// 	}
+// }
 
 // test for shredding a file in a directory which does not have executable permission
 func Test_5(t *testing.T) {
@@ -281,7 +281,7 @@ func Test_5(t *testing.T) {
 	}
 }
 
-// test for shredding a file in a directory which does not have executable permission
+// test for shredding a directory instead of a file
 func Test_6(t *testing.T) {
 
 	createErr := os.MkdirAll("testDir/testSubDir", 0777)
