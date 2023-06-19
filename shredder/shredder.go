@@ -7,12 +7,13 @@ import (
 	"path/filepath"
 )
 
+// function to check if the parent directory for the given file has exec permissions
 func HasExecPerm(fileName string) *ShredderError {
 
-	// file exists
+	// not checking if the file exists in this function
+	// has to be checked before the function is called
 
 	dir, _ := filepath.Split(fileName)
-	log.Println("Parent directory name is :", dir)
 
 	cwDir, wdErr := os.Getwd()
 	if wdErr != nil {
@@ -20,7 +21,6 @@ func HasExecPerm(fileName string) *ShredderError {
 		err := ReturnInfo(ShredErrProcessing, ShredErrProcessing.ShredErrString())
 		return err
 	}
-	log.Println("Current Working Directory is ", cwDir)
 
 	dirError := os.Chdir(dir)
 	if dirError != nil {
@@ -37,24 +37,23 @@ func Shred(fileName string) *ShredderError {
 	log.Printf("Shredding file: %v\n", fileName)
 
 	// check if the file exists
-
 	fileInfo, fileError := os.Stat(fileName)
 
 	if os.IsNotExist(fileError) {
 		log.Printf("\"%v\" file does not exist.\n", fileName)
 		err := ReturnInfo(ShredErrFileNotExist, ShredErrFileNotExist.ShredErrString())
 		return err
-	} else {
-		log.Printf("\"%v\" file exists.\n", fileName)
 	}
 
+	// check if the parent directory has executable permission
 	permError := HasExecPerm(fileName)
 	if permError != nil	{
 		return permError
 	}
 
+	// check if the given path is a file or a directory
 	if !fileInfo.Mode().IsRegular() {
-        log.Println(fileName, "is not a regular file!")
+        log.Println(fileName, "is not a regular file.")
 		err := ReturnInfo(ShredErrNotAFile, ShredErrNotAFile.ShredErrString())
 		return err
     }
@@ -87,22 +86,10 @@ func Shred(fileName string) *ShredderError {
 
 	defer fileHandle.Close()
 
-	var readBuffer []byte
-	_, readError := fileHandle.Read(readBuffer)
-
-	if readError != nil {
-		log.Printf("%v\n", readError)
-	}
-
-	readStringBuffer := string(readBuffer)
-	log.Println(readStringBuffer)
-
 	for shredCount > 0 {
-
 		var shreddedBytes int = 0
 
 		for shreddedBytes < randomDataSize {
-
 			// generate random data
 			_, randErr := rand.Read(randomData)
 
@@ -121,9 +108,7 @@ func Shred(fileName string) *ShredderError {
 			}
 
 			shreddedBytes += numBytes
-
 		}
-
 		shredCount -= 1
 	}
 
@@ -134,7 +119,6 @@ func Shred(fileName string) *ShredderError {
 	}
 
 	// delete the file
-
 	delErr := os.Remove(fileName)
     if delErr != nil {
         log.Printf("%v\n", delErr)
