@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <unistd.h>
 
-int main() 
+int main()
 {
     printf("Hello World!\r\n");
-	while(1);
+    while (1)
+        ;
 }
