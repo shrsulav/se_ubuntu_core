@@ -3,6 +3,7 @@ sudo rm -r working_dir
 
 # install dependencies
 sudo apt update
+sudo apt install git
 sudo apt install build-essential flex libncurses5-dev bc libelf-dev bison libssl-dev
 sudo apt install qemu qemu-system
 
