@@ -36,6 +36,33 @@ func HasExecPerm(fileName string) *ShredderError {
 	return nil
 }
 
+func WriteToFileHandle(fileHandle *os.File, fileBytesNum int64, randomDataSize int) error {
+
+	var shreddedBytes int64 = 0
+
+	randomData := make([]byte, randomDataSize)
+
+	for shreddedBytes < fileBytesNum {
+		// generate random data
+		_, randErr := rand.Read(randomData)
+
+		if randErr != nil {
+			log.Printf("Error generating random data.\n");
+		}
+
+		// write to file
+		numBytes, writeError := fileHandle.WriteAt(randomData, int64(shreddedBytes))
+
+		if writeError != nil {
+			return writeError
+		}
+
+		shreddedBytes += int64(numBytes)
+	}
+
+	return nil
+}
+
 func Shred(fileName string) *ShredderError {
 	log.Printf("Shredding file: %v\n", fileName)
 
@@ -78,11 +105,8 @@ func Shred(fileName string) *ShredderError {
 
 	log.Printf("Random data size is %d\n", randomDataSize)
 
-	randomData := make([]byte, randomDataSize)
-
 	shredCount := maxShredCount
 	shredErrCount := 0
-	shredCycleCount := 0
 
 	fileHandle, openError := os.OpenFile(fileName, os.O_RDWR, 0666)
 
@@ -95,28 +119,9 @@ func Shred(fileName string) *ShredderError {
 	defer fileHandle.Close()
 
 	for shredCount > 0 {
-		var shreddedBytes int64 = 0
-
-		for shreddedBytes < fileBytesNum {
-			// generate random data
-			_, randErr := rand.Read(randomData)
-
-			if randErr != nil {
-				log.Printf("Error generating random data.\n");
-			}
-
-			// write to file
-			numBytes, writeError := fileHandle.WriteAt(randomData, int64(shreddedBytes))
-
-			if writeError != nil {
-				log.Printf("Shredder Pass %d : %v\n", 4 - shredCount, writeError)
-				shredErrCount += 1
-			} else {
-				log.Printf("Shredder Pass %d: Shredding successful.\n", 4 - shredCount)
-				shredCycleCount += 1
-			}
-
-			shreddedBytes += int64(numBytes)
+		randomizeErr := WriteToFileHandle(fileHandle, fileBytesNum, randomDataSize)
+		if randomizeErr != nil {
+			shredErrCount += 1
 		}
 		shredCount -= 1
 	}
@@ -126,8 +131,6 @@ func Shred(fileName string) *ShredderError {
 		err := ReturnInfo(ShredErrFileWrite, ShredErrFileWrite.ShredErrString())
 		return err
 	}
-
-	log.Printf("Shredder Cycle Count: %d.\n", shredCycleCount)
 
 	// delete the file
 	delErr := os.Remove(fileName)
@@ -139,7 +142,7 @@ func Shred(fileName string) *ShredderError {
 		log.Printf("Deleted the file \"%v\"\n", fileName)
 	}
 
-	err := ReturnInfo(ShredErrCode(shredCycleCount), ShredErrSuccess.ShredErrString())
+	err := ReturnInfo(ShredErrSuccess, ShredErrSuccess.ShredErrString())
 	return err
 }
 

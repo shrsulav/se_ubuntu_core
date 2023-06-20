@@ -68,7 +68,7 @@ func Test_2(t *testing.T) {
 		return
 	}
 	result := Shred(fileName)
-	expected := ShredErrCode(3)
+	expected := ShredErrSuccess
 
 	if result.ErrCode != expected {
 		t.Errorf("got %+v, expected %+v", result.ErrCode, expected)
@@ -396,7 +396,7 @@ func Test_7(t *testing.T) {
 		return
 	}
 	result := Shred(fileName)
-	expected := ShredErrCode(9)
+	expected := ShredErrSuccess
 
 	if result.ErrCode != expected {
 		t.Errorf("got %+v, expected %+v", result.ErrCode, expected)
