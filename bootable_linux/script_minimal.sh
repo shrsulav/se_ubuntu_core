@@ -1,11 +1,11 @@
 # clean working directory
-sudo rm -r working_dir
+rm -r working_dir
 
 # install dependencies
-sudo apt update
-sudo apt install git cpio
-sudo apt install build-essential flex libncurses5-dev bc libelf-dev bison libssl-dev
-sudo apt install qemu qemu-system
+apt update
+apt install git cpio
+apt install build-essential flex libncurses5-dev bc libelf-dev bison libssl-dev
+apt install qemu qemu-system
 
 # Create a working directory
 mkdir working_dir
