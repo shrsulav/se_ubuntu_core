@@ -418,3 +418,93 @@ func Test_7(t *testing.T) {
 		log.Printf("Successfully deleted test directory.")
 	}
 }
+
+// test if the helper function actually writes random data to the given file handle
+func Test_8(t *testing.T) {
+	createErr := os.MkdirAll("testDir", 0777)
+
+	if createErr != nil {
+		t.Errorf("Error creating test directory.")
+		return
+	}
+
+	fileName := "testDir/test_file_8.txt"
+	fileNameBkp := "testDir/test_file_8_bkp.txt"
+
+	fileSize := 10_000
+	randomData := make([]byte, fileSize)
+
+	_, randError := rand.Read(randomData)
+	if randError != nil {
+		log.Printf("Error while generating random string: %s", randError)
+	}
+
+	writeError := os.WriteFile(fileName, randomData, 0666)
+	writeError2 := os.WriteFile(fileNameBkp, randomData, 0666)
+
+	if writeError != nil && writeError2 != nil {
+		t.Errorf("Error creating test file.")
+
+		removeErr := os.RemoveAll("testDir")
+
+		if removeErr != nil {
+			t.Errorf("Error deleting the test directory")
+		} else {
+			log.Printf("Successfully deleted test directory.")
+		}
+
+		return
+	}
+
+	fileHandle, openError := os.OpenFile(fileName, os.O_RDWR, 0666)
+
+	if openError != nil {
+		log.Printf("%v\n", openError)
+		t.Errorf("Error while opening file.\n")
+	}
+
+	defer fileHandle.Close()
+
+	result := WriteToFileHandle(fileHandle, int64(fileSize), 100)
+
+	if result != nil {
+		t.Errorf("WriteToFileHandle not successful")
+	}
+
+	dataRandomized, randomizedFileErr := os.ReadFile(fileName)
+	dataOriginal, originalFileErr := os.ReadFile(fileNameBkp)
+
+	if randomizedFileErr != nil && originalFileErr != nil {
+		t.Errorf("Error while checking content randomization.")
+	}
+	log.Println("Number of bytes in original file: ", len(dataOriginal))
+	log.Println("Number of bytes in randomized file: ", len(dataRandomized))
+
+	if len(dataOriginal) > len(dataRandomized) {
+		t.Errorf("Less data bytes after randomization")
+	}
+
+	var diffCount int = 0
+
+	for i:=0; i<len(dataOriginal); i++ {
+		if dataOriginal[i] != dataRandomized[i] {
+			diffCount++
+		}
+	}
+
+	log.Println("Diff count: ", diffCount)
+
+	randomizationPercent := diffCount * 100 / fileSize
+	log.Println("Randomization percentage is ", randomizationPercent)
+	if randomizationPercent < 75  {
+		t.Errorf("Randomization is less than 75")
+	}
+
+	removeErr := os.RemoveAll("testDir")
+
+	if removeErr != nil {
+		t.Errorf("Error deleting the test directory")
+	} else {
+		log.Printf("Successfully deleted test directory.")
+	}
+}
