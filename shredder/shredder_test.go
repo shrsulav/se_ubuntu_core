@@ -74,6 +74,15 @@ func Test_2(t *testing.T) {
 		t.Errorf("got %+v, expected %+v", result.ErrCode, expected)
 	}
 
+	// check if the file exists
+	_, fileError := os.Stat(fileName)
+
+	if !os.IsNotExist(fileError) {
+		t.Errorf("File should have been deleted but is not.")
+	} else {
+		log.Println("File deleted.")
+	}
+
 	removeErr := os.RemoveAll("testDir")
 
 	if removeErr != nil {
@@ -136,6 +145,14 @@ func Test_3(t *testing.T) {
 
 	if result.ErrCode != expected {
 		t.Errorf("got %+v, expected %+v", result.ErrCode, expected)
+	}
+
+	// check if the file exists
+	_, fileError := os.Stat(fileName)
+	if os.IsNotExist(fileError) {
+		t.Errorf("File should not have been deleted, but is.")
+	} else {
+		log.Println("File not deleted.")
 	}
 
 	removeErr := os.RemoveAll("testDir")
@@ -272,6 +289,14 @@ func Test_5(t *testing.T) {
 		log.Printf("%v\n", remodError)
 	}
 
+	// check if the file exists
+	_, fileError := os.Stat(fileName)
+	if os.IsNotExist(fileError) {
+		t.Errorf("File should not have been deleted but is.")
+	} else {
+		log.Println("File not deleted.")
+	}
+
 	removeErr := os.RemoveAll("testDir")
 
 	if removeErr != nil {
@@ -318,6 +343,14 @@ func Test_6(t *testing.T) {
 
 	if result.ErrCode != expected {
 		t.Errorf("got %+v, expected %+v", result.ErrCode, expected)
+	}
+
+	// check if the file exists
+	_, fileError := os.Stat(fileName)
+	if os.IsNotExist(fileError) {
+		t.Errorf("File should not have been deleted but is.")
+	} else {
+		log.Println("File not deleted.")
 	}
 
 	removeErr := os.RemoveAll("testDir")
@@ -367,6 +400,14 @@ func Test_7(t *testing.T) {
 
 	if result.ErrCode != expected {
 		t.Errorf("got %+v, expected %+v", result.ErrCode, expected)
+	}
+
+	// check if the file exists
+	_, fileError := os.Stat(fileName)
+	if !os.IsNotExist(fileError) {
+		t.Errorf("File should have been deleted but is not.")
+	} else {
+		log.Println("File deleted.")
 	}
 
 	removeErr := os.RemoveAll("testDir")
