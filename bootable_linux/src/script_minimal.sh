@@ -1,11 +1,17 @@
 # clean working directory
 rm -r working_dir
 
+# check if the caller has root permissions
+SUDO_VAR = ""
+if "$EUID" != 0
+    SUDO_VAR = "sudo "
+fi
+
 # install dependencies
-apt update
-apt install git cpio
-apt install build-essential flex libncurses5-dev bc libelf-dev bison libssl-dev
-apt install qemu qemu-system
+$SUDO_VAR apt update
+$SUDO_VAR apt install -y git cpio
+$SUDO_VAR apt install -y build-essential flex libncurses5-dev bc libelf-dev bison libssl-dev
+$SUDO_VAR apt install -y qemu qemu-system
 
 # Create a working directory
 mkdir working_dir
