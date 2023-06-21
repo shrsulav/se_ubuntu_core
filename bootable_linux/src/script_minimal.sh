@@ -1,13 +1,17 @@
-#!/bin/sh
-
-# clean working directory
-rm -r working_dir
-
 # check if the caller has root permissions
 SUDO_VAR=""
-if [ "$EUID" != 0 ]; then
+if [ "$EUID" != 0 ];
+then
+    echo "EUID is not 0"
     SUDO_VAR="sudo "
+else
+    echo "EUID is 0"
 fi
+
+echo "Starting the script"
+
+# clean working directory
+$SUDO_VAR rm -r working_dir
 
 # install dependencies
 $SUDO_VAR apt update
@@ -24,7 +28,6 @@ git clone --depth=1 git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux
 cd linux
 make x86_64_defconfig
 make -j $(nproc)
-
 cd ../
 
 # create a custom init file and build with static linking
