@@ -1,10 +1,12 @@
+#!/bin/sh
+
 # clean working directory
 rm -r working_dir
 
 # check if the caller has root permissions
-SUDO_VAR = ""
-if "$EUID" != 0
-    SUDO_VAR = "sudo "
+SUDO_VAR=""
+if [ "$EUID" != 0 ]; then
+    SUDO_VAR="sudo "
 fi
 
 # install dependencies
