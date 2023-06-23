@@ -108,17 +108,17 @@ func Shred(fileName string) *ShredderError {
 	shredCount := maxShredCount
 	shredErrCount := 0
 
-	fileHandle, openError := os.OpenFile(fileName, os.O_RDWR, 0666)
-
-	if openError != nil {
-		log.Printf("%v\n", openError)
-		err := ReturnInfo(ShredErrFileOpen, ShredErrFileOpen.ShredErrString())
-		return err
-	}
-
-	defer fileHandle.Close()
-
 	for shredCount > 0 {
+		fileHandle, openError := os.OpenFile(fileName, os.O_RDWR, 0666)
+
+		if openError != nil {
+			log.Printf("%v\n", openError)
+			err := ReturnInfo(ShredErrFileOpen, ShredErrFileOpen.ShredErrString())
+			return err
+		}
+
+		defer fileHandle.Close()
+
 		randomizeErr := WriteToFileHandle(fileHandle, fileBytesNum, randomDataSize)
 		if randomizeErr != nil {
 			shredErrCount += 1
